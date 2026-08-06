@@ -6,9 +6,9 @@ module top(
     );
     logic dataValid;
     logic write_to_fifo;
-    logic [15:0] data_write_to_FIFO;
+    logic [7:0] data_write_to_FIFO;
     logic read_from_fifo;
-    logic [15:0] data_from_FIFO;
+    logic [7:0] data_from_FIFO;
     logic FIFO_full, FIFO_almost_full;
     logic FIFO_empty, FIFO_almost_empty;
     UART_RX uart_rx_inst (

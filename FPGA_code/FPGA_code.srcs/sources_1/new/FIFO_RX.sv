@@ -1,45 +1,38 @@
 `timescale 1ns / 1ps
 module FIFO (
-    // Write domain
     input  logic                   wr_clk,
     input  logic                   wr_rst,      
     input  logic                   wr_en,
-    input  logic [15:0]            wr_data,
+    input  logic [7:0]             wr_data,
     output logic                   full,
     output logic                   almost_full,
-
-    // Read domain
     input  logic                   rd_clk,
     input  logic                   rd_rst,
     input  logic                   rd_en,
-    output logic [15:0]            rd_data,
+    output logic [7:0]             rd_data,
     output logic                   empty,
     output logic                   almost_empty
 );
-    localparam DATA_WIDTH = 16;
+    localparam DATA_WIDTH = 8;
     localparam ADDR_WIDTH = 5 ;      
     
     logic [ADDR_WIDTH:0] rd_ptr ;
     logic [ADDR_WIDTH:0] wr_ptr ;
     logic [DATA_WIDTH-1:0] data [(2**ADDR_WIDTH)-1:0];   
-
     logic  rd_wrap;
     logic  wr_wrap;
     
     logic [ADDR_WIDTH-1:0] wr_addr;
     logic [ADDR_WIDTH-1:0] rd_addr;
-
     assign rd_addr = rd_ptr[ADDR_WIDTH-1:0];
     assign wr_addr = wr_ptr[ADDR_WIDTH-1:0];
     assign rd_wrap = rd_ptr[ADDR_WIDTH];
     assign wr_wrap = wr_ptr[ADDR_WIDTH];
-
     logic [ADDR_WIDTH:0] grayCode_rd_ptr ;
     logic [ADDR_WIDTH:0] grayCode_wr_ptr ;
     
     logic [ADDR_WIDTH:0] rd_ptr_syncronizer;
     logic [ADDR_WIDTH:0] wr_ptr_syncronizer;
-
     logic [ADDR_WIDTH:0] grayCode_rd_ptr_synced;
     logic [ADDR_WIDTH:0] grayCode_wr_ptr_synced;
     
@@ -66,14 +59,12 @@ module FIFO (
     
     logic writeNow;
     assign writeNow = wr_en && !FIFO_FUll;
-
     generate
         for(i=0;i<=ADDR_WIDTH;i++) begin
             assign binary_rd_ptr_synced[i] = ^(grayCode_rd_ptr_synced >> i);
             assign binary_wr_ptr_synced[i] = ^(grayCode_wr_ptr_synced >> i);
         end
     endgenerate
-
     always_ff@(posedge wr_clk, posedge wr_rst) begin 
         if(wr_rst) begin 
             almost_full <= 0;
